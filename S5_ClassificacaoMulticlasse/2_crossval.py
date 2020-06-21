@@ -24,15 +24,7 @@ from sklearn.preprocessing import LabelEncoder
 label_y = LabelEncoder()
 y = label_y.fit_transform(y)
 y_dummy = np_utils.to_categorical(y)
-
-# %% Divisao treinamento e teste
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(X, y_dummy, test_size = 0.25)
 # %% Estrutura da rede neural
-
-#Rede
-
 def criar_rede():
     classificador = Sequential()
     
@@ -54,23 +46,30 @@ def criar_rede():
     
     #Compilacao
     
-    opt = keras.optimizers.Adam(lr = 0.01, decay = 0.001, clipvalue = 1)
+    #opt = keras.optimizers.Adam(lr = 0.01, decay = 0.001, clipvalue = 1)
     
-    classificador.compile(optimizer = opt, 
+    classificador.compile(optimizer = 'adam', 
                           loss = 'categorical_crossentropy', 
                           metrics = ['categorical_accuracy'])
     
     #Querido, nao estava dando certo antes porque voce nao estava retornando o classificador
     return classificador
-# %%        
+# %% 
+from keras.wrappers.scikit_learn import KerasClassifier
 
-classificador = criar_rede()
+classificador = KerasClassifier(build_fn=criar_rede, 
+                                epochs = 500, 
+                                batch_size = 8)       
+# %%Validacao cruzada
+from sklearn.model_selection import cross_val_score
+acuracias = cross_val_score(estimator = classificador, 
+                             X = X, 
+                             y = y, 
+                             cv = 10, 
+                             scoring ='accuracy')
 
-# %%
-classificador.fit(x = X_train, 
-                  y = y_train, 
-                  batch_size = 8, 
-                  epochs = 1000)
+acuracia_media = acuracias.mean()
+acuracia_desvio = acuracias.std()
 
 
 # %% Metricas de avaliacao

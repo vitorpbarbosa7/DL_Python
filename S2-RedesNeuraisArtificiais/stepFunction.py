@@ -1,9 +1,9 @@
 import numpy as np
 import math
 
-#Função de ativação degrau:
+#Funcao de ativacao degrau:
 #Transfer function) 
-#APenas problemas linearmente separáveis, jamais em deep learning
+#APenas problemas linearmente separaveis, jamais em deep learning
 def stepFunction(soma):
     if (soma >=1):
         return 1
@@ -11,23 +11,23 @@ def stepFunction(soma):
 
 sinapse = stepFunction(20)
 
-#Função sigmoide:
+#Funcao sigmoide:
 def sigmoidFunction(x):
     y = 1/(1+math.exp(-x))
     return y
 
 sinapse_sig = sigmoidFunction(-5)
 
-#Boa para quando há valores negativos e positivos na rede
-#Logo quando está normaliada, possui valores positivos e negativos
-#E a média de uma base normalizada é 0, legal, muito bom
+#Boa para quando ha valores negativos e positivos na rede
+#Logo quando est normaliada, possui valores positivos e negativos
+#E a media de uma base normalizada e 0, legal, muito bom
 def tanhFunction(x):
     y = (math.exp(x) - math.exp(-x))/(math.exp(x) + math.exp(-x))
     return y
 
 sinapse_tanh = tanhFunction(-4)
 
-#FUnção relu
+#FUncao relu
 #Muito utilziadas em redes neurais convolucionais e 
 #em muitas camadas de redes neurais
 def relu(soma):
@@ -37,13 +37,13 @@ def relu(soma):
 
 sinapse_relu = relu(-3)
 
-#Função linear (identity) - adequada para regressões
+#Funcao linear (identity) - adequada para regressoes
 def linearFunction(soma):
     return soma
 
 sinapse_linearFunction = linearFunction(5)
 
-#Função softmax:
+#Funcao softmax:
 def softmaxFunction(vetor):
     ex = np.exp(vetor)
     return ex/ex.sum()
