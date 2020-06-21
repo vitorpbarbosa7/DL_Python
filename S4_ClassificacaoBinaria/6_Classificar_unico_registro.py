@@ -26,10 +26,6 @@ y = df_saidas.values
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
 
-# %%GridSearch para tuning dos parâmetros
-# Pesquisa em grade para encontrar os melhores parâmetros
-from sklearn.model_selection import GridSearchCV 
-
 #%% Criação da rede dentro de uma função (a função retornará o classificador)
 # Anteriormente ao GridSearchCV, haviámos criado a rede neural de forma estática. 
 # Agora vamos passar como hyperparâmetros:
@@ -59,47 +55,31 @@ def criar_rede(optimizer, loss, kernel_initializer, activation, neurons):
     
     #Adição da camada de dropout para zerar neurônios da camada anteriormente definida? 
     #Geralmente eh importante se preocupar em reduzir o overfitting de camadas maiores, 
+    #Como essas duas camadas bem grandes
+    classificador.add(Dropout(rate = 0.2))
+    
+    #Output layer
+    # Para classificação binária, utilizar sigmoid é adequado porque retorna uma probabilidade 
+    classificador.add(Dense(units=1, 
+                  activation='sigmoid',
+                  use_bias = True))    
+    
+    #Compilacao da rede neural:
+    #Classificação binária posso utilizar crossnetropy
+    #Antes estávamos utilizando otimizador fixo, e agora será otimizador do GridSearchCV
+    classificador.compile(optimizer=optimizer,
+                      loss = loss,
+                      metrics= ['binary_accuracy']) #Sempre no formato de lista ou dicionário
+    
+    #Visualizar a arquitetura total da rede mais seus hiperparâmetros definidos para o treinamento
+    classificador.summary()
+        
+    #Adição da camada de dropout para zerar neurônios da camada anteriormente definida? 
+    #Geralmente eh importante se preocupar em reduzir o overfitting de camadas maiores, 
     #Como essas duas camadas bem grandesx
     return classificador
 
-
-#%% Vamos rodar um GridSearch pequeno aqui para teste, mas a máquina não guenta tudo isso não
-    
-#Na utilização de GridSearchCV, ao instanciar o objeto classificador a partir da classe KerasClassifier, só preciso inserir o build_fn para criar a função 
-# e não as épocas e batch size
-classificador = KerasClassifier(build_fn=criar_rede)
-
-# %%Hyperparameters
-#Hyperparâmetros são inseridos no formato de dicionário. 
-#Chaves com o nome do hyperparâmetro e valor na forma de lista
-
-#Parametros mais decentes:
-parameters_2 = {'batch_size': [16,32], 
-              'epochs': [50],
-              'optimizer': ['Adam'],
-              'loss': ['binary_crossentropy'],
-              'kernel_initializer': ['random_uniform'],
-              'activation': ['relu'],
-              'neurons': [16,20]} 
-
-
-
-# %% # Criação do GridSearchCV
-# - No próprio GridSearchCV está implementado a Validação Cruzada 
-gridsearch_2 = GridSearchCV(estimator = classificador, 
-                          param_grid = parameters_2, 
-                          scoring = 'accuracy',
-                          cv = 5)
-
-# %%Parâmetros decentes:
-gridsearch_2 = gridsearch_2.fit(X = X, 
-                                y = y)
-
-# %%
-best_params_2 = gridsearch_2.best_params_
-best_accuracy_2 = gridsearch_2.best_score_
-
-# %%Após a definição dos melhores parâmetros: (Eu peguei os melhores do resultado do Jones, porque demoraria demais para rodar)
+# %%Após a definição dos melhores parâmetros: (Eu peguei os melhores do resultado do Jones Granatyr, porque demoraria demais para rodar)
 #Se fosse para pegar do meu próprio modelo, poderíamos utilizar os parâmetros armazenados
 # no dicionário atributo do objeto gridsearch_2
 opt = keras.optimizers.Adam(lr = 0.001, 
@@ -112,11 +92,15 @@ rede = criar_rede(optimizer = opt,
                   activation = 'relu', 
                   neurons = 16)
 
+classificador = KerasClassifier(build_fn=rede)
+
 # %% Treinamento do modelo apos o tuning dos parametros
-rede.fit(x = X, 
-         y = y, 
-         batch_size = 16,
-         epochs = 100)
+# Fit do modelo
+resultados = cross_val_score(estimator = classificador,
+                             X = X,
+                             y = y, 
+                             cv=10,
+                             scoring = 'accuracy')
 
 # %%Salvar a rede treinada:
 #Aqui na realidade ele gera uma string

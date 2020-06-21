@@ -1,0 +1,33 @@
+Padronizar os dados previsores com StandardScaler foi a configuração que elevou a acurácia do modelo para 0,94, resultado da média de cv = 10. 
+
+Configuração da rede:
+
+Layer (type)                 Output Shape              Param #   
+
+=================================================================
+
+dense_216 (Dense)            (None, 16)                496       
+Função de Ativação = 'relu'
+kernel_initializer = 'random_uniform'
+_________________________________________________________________
+
+dropout_117 (Dropout)        (None, 16)                0         
+
+_________________________________________________________________
+
+dense_217 (Dense)            (None, 8)                 136       
+Função de Ativação = 'relu'
+kernel_initializer = 'random_uniform'
+_________________________________________________________________
+
+dropout_118 (Dropout)        (None, 8)                 0         
+
+_________________________________________________________________
+
+dense_218 (Dense)            (None, 1)                 9         
+Função de Ativação = 'sigmoid'
+=================================================================
+
+Otimizador: Adam, learning_rate = 0.001. decay = 0.001. clipvalue = 1
+
+Compilação: epochs = 100, batch_size = 8.
