@@ -85,14 +85,14 @@ classificador = KerasClassifier(build_fn = criar_rede,
 resultados = cross_val_score(estimator = classificador,
                              X = X,
                              y = y, 
-                             cv=10,
+                             cv = 10,
                              scoring = 'accuracy')
 
 resultado = resultados.mean()
 std = resultados.std()
 
 
-# %% Divisão entre base de dados de treinamento e de teste 
+"""# %% Divisão entre base de dados de treinamento e de teste 
 from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(df_entradas, 
                                                     df_saidas,
@@ -142,3 +142,4 @@ print(report_metrics)
 # %%Avaliação do modelo com evaluate: (Função evaluate do próprio keras)
 #Retorna o valor da função de perda e o valor da acurácia
 resultado  = classificador.evaluate(X_test, y_test)
+"""
